@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "flower_ui.h": "c",
+        "ui_game2048page.h": "c",
+        "ui_gamemuyupage.h": "c",
+        "ui_chatbotpage.h": "c"
+    }
+}
