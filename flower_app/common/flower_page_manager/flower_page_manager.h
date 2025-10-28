@@ -11,7 +11,7 @@ typedef struct {
     lv_obj_t *page_obj;                             // 页面上的主要 LVGL 对象
 } flower_lib_pm_page_t;
 
-// 定义 PageManager 类型
-// 之后实现
+void flower_pm_register_page(flower_lib_pm_page_t *page);
+void flower_pm_switch_page(const char *page_name);
 
 #endif
