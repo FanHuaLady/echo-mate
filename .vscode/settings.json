@@ -3,6 +3,10 @@
         "flower_ui.h": "c",
         "ui_game2048page.h": "c",
         "ui_gamemuyupage.h": "c",
-        "ui_chatbotpage.h": "c"
+        "ui_chatbotpage.h": "c",
+        "lv_lib_stack.h": "c",
+        "lv_lib_conf.h": "c",
+        "flower_home_page.h": "c",
+        "string.h": "c"
     }
 }
