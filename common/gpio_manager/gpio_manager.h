@@ -20,29 +20,15 @@ extern "C" {
 #define OUT_DIRECTION "out"
 #define IN_DIRECTION  "in"
 
-// 根据bank, group, X计算GPIO编号
-int calculate_gpio_pin(int bank, int group, int x);
+int calculate_gpio_pin(int bank, int group, int x);             // 根据bank, group, X计算GPIO编号
+int gpio_export(int gpio_pin);                                  // 导出GPIO引脚
+int gpio_unexport(int gpio_pin);                                // 清理GPIO引脚（释放资源）          
+int gpio_set_direction(int gpio_pin, const char *direction);    // 设置GPIO引脚方向（输入或输出）
+int gpio_set_value(int gpio_pin, int value);                    // 设置GPIO引脚值（仅适用于输出模式）
+int gpio_get_value(int gpio_pin);                               // 读取GPIO引脚值（仅适用于输入模式）
 
-// 导出GPIO引脚
-int gpio_export(int gpio_pin);
-
-// 清理GPIO引脚（释放资源）
-int gpio_unexport(int gpio_pin);
-
-// 设置GPIO引脚方向（输入或输出）
-int gpio_set_direction(int gpio_pin, const char *direction);
-
-// 设置GPIO引脚值（仅适用于输出模式）
-int gpio_set_value(int gpio_pin, int value);
-
-// 读取GPIO引脚值（仅适用于输入模式）
-int gpio_get_value(int gpio_pin);
-
-// 初始化GPIO引脚
-void gpio_init(int gpio_pin, const char *direction);
-
-// deinit GPIO引脚
-void gpio_deinit(int gpio_pin);
+void gpio_init(int gpio_pin, const char *direction);            // 初始化GPIO引脚
+void gpio_deinit(int gpio_pin);                                 // deinit GPIO引脚
 
 #ifdef __cplusplus
 } /*extern "C"*/

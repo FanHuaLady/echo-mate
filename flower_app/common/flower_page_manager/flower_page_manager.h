@@ -12,17 +12,17 @@ typedef struct {
 } flower_lib_pm_page_t;
 
 // IMAGES AND IMAGE SETS
-LV_IMG_DECLARE(ui_img_weather64_png);    // assets/weather64.png
-LV_IMG_DECLARE(ui_img_calendar64_png);    // assets/calendar64.png
-LV_IMG_DECLARE(ui_img_memo64_png);    // assets/Memo64.png
-LV_IMG_DECLARE(ui_img_gamememory64_png);    // assets/GameMemory64.png
-LV_IMG_DECLARE(ui_img_paint60_png);    // assets/paint60.png
-LV_IMG_DECLARE(ui_img_question60_png);    // assets/question60.png
-LV_IMG_DECLARE(ui_img_think60_png);    // assets/think60.png
-LV_IMG_DECLARE(ui_img_hand60_png);    // assets/hand60.png
-LV_IMG_DECLARE(ui_img_muyu128_png);    // assets/muyu128.png
-LV_IMG_DECLARE(ui_img_sun_png);    // assets/sun.png
-LV_IMG_DECLARE(ui_img_clouds_png);    // assets/clouds.png
+LV_IMG_DECLARE(ui_img_weather64_png);               // assets/weather64.png
+LV_IMG_DECLARE(ui_img_calendar64_png);              // assets/calendar64.png
+LV_IMG_DECLARE(ui_img_memo64_png);                  // assets/Memo64.png
+LV_IMG_DECLARE(ui_img_gamememory64_png);            // assets/GameMemory64.png
+LV_IMG_DECLARE(ui_img_paint60_png);                 // assets/paint60.png
+LV_IMG_DECLARE(ui_img_question60_png);              // assets/question60.png
+LV_IMG_DECLARE(ui_img_think60_png);                 // assets/think60.png
+LV_IMG_DECLARE(ui_img_hand60_png);                  // assets/hand60.png
+LV_IMG_DECLARE(ui_img_muyu128_png);                 // assets/muyu128.png
+LV_IMG_DECLARE(ui_img_sun_png);                     // assets/sun.png
+LV_IMG_DECLARE(ui_img_clouds_png);                  // assets/clouds.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_iconfont20);

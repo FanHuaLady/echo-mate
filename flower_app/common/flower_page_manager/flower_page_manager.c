@@ -32,32 +32,29 @@ static flower_lib_pm_page_t* _find_page(const char *name)
 // 页面切换：核心逻辑
 void flower_pm_switch_page(const char *page_name) 
 {
-    flower_lib_pm_page_t *target_page = _find_page(page_name);
+    flower_lib_pm_page_t *target_page = _find_page(page_name);              // 查找目标页面
     if (target_page == NULL) 
     {
         printf("Page not found: %s\n", page_name);
         return;
     }
 
-    printf("Switching to page: %s\n", page_name);
-
-    // 如果目标页面已经是当前页面，直接返回
-    if (g_current_page == target_page) 
+    if (g_current_page == target_page)                                      // 如果目标页面已经是当前页面，直接返回
     {
         printf("Page is already active: %s\n", page_name);
         return;
     }
 
     // 销毁当前页面
-    if (g_current_page != NULL) 
+    if (g_current_page != NULL)                                             // 当前界面存在
     {
-        if (g_current_page->deinit != NULL) 
+        if (g_current_page->deinit != NULL)                                 // 此界面存在销毁函数
         {
-            g_current_page->deinit(g_current_page->page_obj);
+            g_current_page->deinit(g_current_page->page_obj);               // 调用当前页面的销毁函数
         }
-        if (g_current_page->page_obj != NULL) 
+        if (g_current_page->page_obj != NULL)                               // 当前页面对象存在
         {
-            lv_obj_del(g_current_page->page_obj);
+            lv_obj_del(g_current_page->page_obj);                           // 删除当前页面对象
             g_current_page->page_obj = NULL;
         }
     }
@@ -69,11 +66,10 @@ void flower_pm_switch_page(const char *page_name)
     lv_obj_clear_flag(new_page, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_pos(new_page, 0, 0);
     
-    target_page->page_obj = new_page;
-    
+    target_page->page_obj = new_page;                                       // 设置新页面对象
     if (target_page->init != NULL) 
     {
-        target_page->init(new_page);
+        target_page->init(new_page);                                        // 调用新页面的初始化函数    
     }
 
     g_current_page = target_page;
