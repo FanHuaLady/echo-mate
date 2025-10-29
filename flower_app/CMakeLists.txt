@@ -6,6 +6,7 @@ file(GLOB_RECURSE FLOWER_APP_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/common/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pages/*/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/images/*.c"
 )
 
 # 生成静态库
@@ -20,6 +21,7 @@ target_include_directories(flower_app PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_CURRENT_SOURCE_DIR}/pages
+    ${CMAKE_CURRENT_SOURCE_DIR}/images
 )
 
 # 链接依赖（若用到common模块）

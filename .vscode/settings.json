@@ -9,6 +9,9 @@
         "flower_home_page.h": "c",
         "string.h": "c",
         "flower_page_manager.h": "c",
-        "flower_led_page.h": "c"
+        "flower_led_page.h": "c",
+        "ui_homepage.h": "c",
+        "ui.h": "c",
+        "lvgl.h": "c"
     }
 }

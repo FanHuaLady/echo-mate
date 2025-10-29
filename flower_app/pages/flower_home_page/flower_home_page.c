@@ -10,39 +10,23 @@ static void btn_click_event_cb(lv_event_t *e)
     flower_pm_switch_page("LEDPage");
 }
 
-// 首页初始化：创建“切换到详情页”按钮
+// 
 void flower_home_page_init(lv_obj_t *page) 
 {
-    printf("=== Home Page Init Start ===\n");
-    
-    // 获取屏幕分辨率
-    lv_coord_t screen_width = lv_disp_get_hor_res(NULL);
-    lv_coord_t screen_height = lv_disp_get_ver_res(NULL);
-    printf("Screen resolution: %dx%d\n", screen_width, screen_height);
-    printf("Page size: %dx%d\n", lv_obj_get_width(page), lv_obj_get_height(page));
-    
-    // 标题
-    lv_obj_t *title = lv_label_create(page);
-    lv_label_set_text(title, "Home");
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
-
-    // 切换按钮 - 使用基于屏幕分辨率的绝对位置
-    lv_obj_t *btn = lv_btn_create(page);
-    lv_obj_set_size(btn, 150, 50);
-    
-    // 设置明显的按钮样式
-    lv_obj_set_style_bg_color(btn, lv_color_hex(0x0066FF), 0);
-    lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, 0);
-    
-    // 绑定事件
-    lv_obj_add_event_cb(btn, btn_click_event_cb, LV_EVENT_CLICKED, NULL);
-
-    // 按钮文本
-    lv_obj_t *btn_label = lv_label_create(btn);
-    lv_label_set_text(btn_label, "led");
-    lv_obj_center(btn_label);
-    
-    printf("=== Home Page Init End ===\n");
+    lv_obj_t *ui_MemoBtn = lv_button_create(page);
+    lv_obj_set_width(ui_MemoBtn, 70);
+    lv_obj_set_height(ui_MemoBtn, 70);
+    lv_obj_set_x(ui_MemoBtn, 15);
+    lv_obj_set_y(ui_MemoBtn, 55);
+    lv_obj_set_align(ui_MemoBtn, LV_ALIGN_LEFT_MID);
+    lv_obj_add_flag(ui_MemoBtn, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_remove_flag(ui_MemoBtn, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_radius(ui_MemoBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_MemoBtn, lv_color_hex(0xB83B5E), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MemoBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_image_src(ui_MemoBtn, &ui_img_memo64_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+    // event
+    lv_obj_add_event_cb(ui_MemoBtn, btn_click_event_cb, LV_EVENT_CLICKED, "MemoPage");
 }
 
 
