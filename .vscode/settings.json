@@ -12,6 +12,8 @@
         "flower_led_page.h": "c",
         "ui_homepage.h": "c",
         "ui.h": "c",
-        "lvgl.h": "c"
+        "lvgl.h": "c",
+        "app_weatherpage.h": "c",
+        "flower_weather_app.h": "c"
     }
 }

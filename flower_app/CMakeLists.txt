@@ -24,6 +24,12 @@ target_include_directories(flower_app PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/images
 )
 
+find_package(json-c REQUIRED)
+find_package(CURL REQUIRED)
+
+target_link_libraries(flower_app PRIVATE json-c)
+target_include_directories(flower_app PRIVATE ${CURL_INCLUDE_DIRS})
+target_link_libraries(flower_app PRIVATE CURL::libcurl)
 # 链接依赖（若用到common模块）
 # 1、PRIVATE：表示这些路径仅对该库可见
 target_link_libraries(flower_app PRIVATE common)

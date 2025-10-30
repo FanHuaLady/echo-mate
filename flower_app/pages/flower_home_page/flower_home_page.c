@@ -2,19 +2,21 @@
 #include "flower_home_page.h"
 #include <stdio.h>
 
-// 定义事件回调函数（C 风格）
+// LED页面按钮回调：跳转到LED页面
 static void led_btn_click_event_cb(lv_event_t *e) 
 {
     lv_event_stop_bubbling(e);
     flower_pm_switch_page("LEDPage");
 }
 
+// 天气页面按钮回调：跳转到天气页面
 static void weather_btn_click_event_cb(lv_event_t *e) 
 {
     lv_event_stop_bubbling(e);
     flower_pm_switch_page("WeatherPage");
 }
 
+// 首页初始化
 void flower_home_page_init(lv_obj_t *page) 
 {
     // 关于LED应用图标
@@ -43,7 +45,6 @@ void flower_home_page_init(lv_obj_t *page)
     lv_obj_remove_flag(ui_WeatherBtn, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_radius(ui_WeatherBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_image_src(ui_WeatherBtn, &ui_img_weather64_png, LV_PART_MAIN | LV_STATE_DEFAULT);
-    // event
     lv_obj_add_event_cb(ui_WeatherBtn, weather_btn_click_event_cb, LV_EVENT_CLICKED, "WeatherPage");
 }
 
