@@ -5,12 +5,14 @@
 #include <curl/curl.h>
 
 // 回调函数，用于处理libcurl接收到的数据
-static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) 
+{
     size_t realsize = size * nmemb;
     char** response = (char**)userp;
 
     *response = realloc(*response, strlen(*response) + realsize + 1);
-    if (*response == NULL) {
+    if (*response == NULL) 
+    {
         fprintf(stderr, "Failed to allocate memory\n");
         return 0;
     }
@@ -19,14 +21,16 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
     return realsize;
 }
 
-int get_weather_info_by_adcode(const char* adcode, WeatherInfo_t* weather_info) {
+int get_weather_info_by_adcode(const char* adcode, WeatherInfo_t* weather_info) 
+{
     CURL* curl_handle;
     CURLcode res;
     char url[256];
     snprintf(url, sizeof(url), "https://restapi.amap.com/v3/weather/weatherInfo?city=%s&key=%s", adcode, ui_system_para.gaode_api_key);
 
     char* response_string = malloc(1); // 初始化为空字符串
-    if (!response_string) {
+    if (!response_string) 
+    {
         fprintf(stderr, "Failed to allocate memory\n");
         return -1;
     }
@@ -101,7 +105,9 @@ int get_weather_info_by_adcode(const char* adcode, WeatherInfo_t* weather_info) 
         curl_global_cleanup();
 
         return 0;
-    } else {
+    } 
+    else 
+    {
         json_object_put(parsed_json); // 释放JSON对象
         free(response_string);
         curl_easy_cleanup(curl_handle);

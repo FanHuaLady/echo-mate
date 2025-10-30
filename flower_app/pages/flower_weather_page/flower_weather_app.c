@@ -13,7 +13,8 @@ static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 
     size_t current_len = *buffer ? strlen(*buffer) : 0;
     char *new_buffer = realloc(*buffer, current_len + total + 1);
-    if (new_buffer == NULL) {
+    if (new_buffer == NULL) 
+    {
         fprintf(stderr, "Memory allocation failed in write_callback\n");
         return 0;
     }
@@ -27,7 +28,8 @@ static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 // 内部函数：解析JSON数据到结构体（静态函数，仅内部使用）
 static int parse_weather_json(const char *json, FlowerWeather *weather) 
 {
-    if (json == NULL || weather == NULL) {
+    if (json == NULL || weather == NULL) 
+    {
         fprintf(stderr, "Invalid parameter in parse_weather_json\n");
         return -1;
     }
@@ -105,7 +107,8 @@ static int parse_weather_json(const char *json, FlowerWeather *weather)
 }
 
 // 对外接口实现：获取天气信息
-FlowerWeather* flower_weather_get_info(void) {
+FlowerWeather* flower_weather_get_info(void) 
+{
     CURL *curl = NULL;
     CURLcode res;
     char *response = NULL;
@@ -114,7 +117,8 @@ FlowerWeather* flower_weather_get_info(void) {
 
     // 1. 分配结构体内存
     weather = (FlowerWeather*)malloc(sizeof(FlowerWeather));
-    if (weather == NULL) {
+    if (weather == NULL) 
+    {
         fprintf(stderr, "Malloc FlowerWeather failed\n");
         return NULL;
     }
@@ -124,7 +128,8 @@ FlowerWeather* flower_weather_get_info(void) {
 
     // 3. 初始化curl
     curl = curl_easy_init();
-    if (curl == NULL) {
+    if (curl == NULL) 
+    {
         fprintf(stderr, "curl initialization failed\n");
         flower_weather_free(weather);
         return NULL;
@@ -149,7 +154,8 @@ FlowerWeather* flower_weather_get_info(void) {
 
     // 6. 发起API请求
     res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK) 
+    {
         fprintf(stderr, "API request failed: %s\n", curl_easy_strerror(res));
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
@@ -159,8 +165,10 @@ FlowerWeather* flower_weather_get_info(void) {
     }
 
     // 7. 解析JSON数据到结构体
-    if (response != NULL && strlen(response) > 0) {
-        if (parse_weather_json(response, weather) != 0) {
+    if (response != NULL && strlen(response) > 0) 
+    {
+        if (parse_weather_json(response, weather) != 0) 
+        {
             fprintf(stderr, "Parse weather data failed\n");
             curl_slist_free_all(headers);
             curl_easy_cleanup(curl);
@@ -168,7 +176,9 @@ FlowerWeather* flower_weather_get_info(void) {
             flower_weather_free(weather);
             return NULL;
         }
-    } else {
+    } 
+    else 
+    {
         fprintf(stderr, "API returned empty response\n");
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
@@ -186,8 +196,10 @@ FlowerWeather* flower_weather_get_info(void) {
 }
 
 // 对外接口实现：释放天气信息内存
-void flower_weather_free(FlowerWeather* weather) {
-    if (weather != NULL) {
+void flower_weather_free(FlowerWeather* weather) 
+{
+    if (weather != NULL) 
+    {
         free(weather);
         weather = NULL;
     }

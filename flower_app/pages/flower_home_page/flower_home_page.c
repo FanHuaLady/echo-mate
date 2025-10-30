@@ -32,7 +32,7 @@ void flower_home_page_init(lv_obj_t *page)
     lv_obj_set_style_bg_color(ui_MemoBtn, lv_color_hex(0xB83B5E), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_MemoBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_image_src(ui_MemoBtn, &ui_img_memo64_png, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_add_event_cb(ui_MemoBtn, led_btn_click_event_cb, LV_EVENT_CLICKED, "MemoPage");
+    lv_obj_add_event_cb(ui_MemoBtn, led_btn_click_event_cb, LV_EVENT_CLICKED, "LEDPage");
 
     // 关于天气应用图标
     lv_obj_t * ui_WeatherBtn = lv_button_create(page);

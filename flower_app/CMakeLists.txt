@@ -7,6 +7,7 @@ file(GLOB_RECURSE FLOWER_APP_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/common/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pages/*/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/images/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/fonts/*.c"
 )
 
 # 生成静态库
@@ -22,6 +23,7 @@ target_include_directories(flower_app PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/common
     ${CMAKE_CURRENT_SOURCE_DIR}/pages
     ${CMAKE_CURRENT_SOURCE_DIR}/images
+    ${CMAKE_CURRENT_SOURCE_DIR}/fonts
 )
 
 find_package(json-c REQUIRED)
