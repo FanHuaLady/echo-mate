@@ -64,6 +64,8 @@ void flower_pm_switch_page(const char *page_name)
     lv_obj_t *new_page = lv_obj_create(parent);
     lv_obj_set_size(new_page, lv_obj_get_width(parent), lv_obj_get_height(parent));
     lv_obj_clear_flag(new_page, LV_OBJ_FLAG_SCROLLABLE);
+//    lv_obj_set_style_bg_color(new_page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+//    lv_obj_set_style_bg_opa(new_page, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_pos(new_page, 0, 0);
     
     target_page->page_obj = new_page;                                       // 设置新页面对象

@@ -1,4 +1,5 @@
 #include "../../common/flower_page_manager/flower_page_manager.h"
+#include "../../common/flower_time_manager/flower_time_manager.h"
 #include "flower_weather_app.h"
 #include "flower_weather_page.h"
 #include <time.h>
@@ -27,15 +28,30 @@ static void weather_timer_cb(lv_timer_t *timer)
         return;
     }
 
-    // 更新日期
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
     char str[36];
-    sprintf(str, "%02d.%02d %s", t->tm_mon + 1, t->tm_mday, day[t->tm_wday]);
-    lv_label_set_text(ui_LabelDate, str);
+
+    // 更新日期
+    /*
+    struct tm *t = flower_time_get_local_time();
+    if (t != NULL) 
+    {
+        sprintf(str, "%02d.%02d %s", t->tm_mon + 1, t->tm_mday, day[t->tm_wday]);
+        lv_label_set_text(ui_LabelDate, str);
+        
+        // 如果需要，可以显示时间同步状态
+        if (!flower_time_is_synced()) 
+        {
+            printf("Warning: Using unsynchronized system time\n");
+        }
+    } 
+    else 
+    {
+        printf("Failed to get local time\n");
+    }
+    */
 
     // 更新核心天气数据
-//    lv_label_set_text(ui_LabelCity, weather->city ? weather->city : "Shijiazhuang");
+    lv_label_set_text(ui_LabelCity,"石家庄");
     sprintf(str, "%s°", weather->temperature ? weather->temperature : "25");
     lv_label_set_text(ui_LabelTemp, str);
     lv_label_set_text(ui_LabelWeather, weather->weather ? weather->weather : "Sunny");
@@ -43,25 +59,8 @@ static void weather_timer_cb(lv_timer_t *timer)
     sprintf(str, "%s%%", weather->humidity ? weather->humidity : "50");
     lv_label_set_text(ui_LabelHumi, str);
 
-    // 根据天气状况切换图片显示
-    /*
-    if(weather->weather && strstr(weather->weather, "Cloud") != NULL)
-    {
-        lv_obj_set_style_opa(ui_ImgCloud, 255, LV_PART_MAIN);
-        lv_obj_set_style_opa(ui_ImgSun, 0, LV_PART_MAIN);
-    }
-    else
-    {
-        lv_obj_set_style_opa(ui_ImgSun, 255, LV_PART_MAIN);
-        lv_obj_set_style_opa(ui_ImgCloud, 0, LV_PART_MAIN);
-    }
-    */
-    
-    printf("Weather info updated via timer.\n");
-
-    // 释放天气数据资源
-    flower_weather_free(weather);
-    lv_refr_now(NULL);  // 强制刷新UI
+    flower_weather_free(weather);                                                       // 释放天气数据资源
+    lv_refr_now(NULL);
 }
 
 static void gesture_back_event_cb(lv_event_t *e) 
@@ -147,7 +146,7 @@ void flower_weather_page_init(lv_obj_t *page)
     lv_obj_set_y(ui_LabelCity, 0);
     lv_obj_set_align(ui_LabelCity, LV_ALIGN_TOP_MID);
     char str[36];
-    sprintf(str, "%s", "Shijiazhuang");
+    sprintf(str, "%s", "石家庄");
     lv_label_set_text(ui_LabelCity, str);
     lv_obj_set_style_text_font(ui_LabelCity, &ui_font_heiti22, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -252,7 +251,7 @@ void flower_weather_page_init(lv_obj_t *page)
 
     flower_weather_free(weather);
 
-    ui_weather_timer = lv_timer_create(weather_timer_cb, 5000, NULL);
+    // ui_weather_timer = lv_timer_create(weather_timer_cb, 5000, NULL);
 
     // lv_obj_add_event_cb(page, gesture_back_event_cb, LV_EVENT_ALL, NULL);
 
@@ -290,5 +289,5 @@ void flower_weather_page_init(lv_obj_t *page)
 
 void flower_weather_page_deinit(lv_obj_t *page) 
 {
-    lv_timer_delete(ui_weather_timer);
+    // lv_timer_delete(ui_weather_timer);
 }

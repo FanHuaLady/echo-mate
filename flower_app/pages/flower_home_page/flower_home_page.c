@@ -1,6 +1,13 @@
 #include "../../common/flower_page_manager/flower_page_manager.h"
+#include "../../common/flower_time_manager/flower_time_manager.h"
 #include "flower_home_page.h"
 #include <stdio.h>
+
+lv_timer_t * ui_home_timer;                                                 // 获取时间
+// lv_obj_t * ui_WifiLabel;
+// lv_obj_t * ui_NoWifiLabel;
+
+lv_obj_t * timelabel;                                                       // 时间标签
 
 // LED页面按钮回调：跳转到LED页面
 static void led_btn_click_event_cb(lv_event_t *e) 
@@ -16,9 +23,34 @@ static void weather_btn_click_event_cb(lv_event_t *e)
     flower_pm_switch_page("WeatherPage");
 }
 
+// 时间
+static void ui_home_timer_cb(lv_event_t *e)
+{
+    struct tm *t = flower_time_get_local_time();
+    if(t != NULL)
+    {
+        char time_str[6];
+        sprintf(time_str, "%02d:%02d", t->tm_hour, t->tm_min);
+        lv_label_set_text(timelabel, time_str);
+    }
+}
+
 // 首页初始化
 void flower_home_page_init(lv_obj_t *page) 
 {
+    // 时间标签
+    timelabel = lv_label_create(page);
+    lv_obj_set_width(timelabel, LV_SIZE_CONTENT);
+    lv_obj_set_height(timelabel, LV_SIZE_CONTENT);
+    lv_obj_set_x(timelabel, 0);
+    lv_obj_set_y(timelabel, 5);
+    lv_obj_set_align(timelabel, LV_ALIGN_TOP_MID);
+    lv_label_set_text(timelabel, "11:59");
+    lv_obj_set_style_text_font(timelabel, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    char time_str[6];
+    sprintf(time_str, "%02d:%02d", 6, 30);
+    lv_label_set_text(timelabel, time_str);
+
     // 关于LED应用图标
     lv_obj_t *ui_MemoBtn = lv_button_create(page);                          // 创建按钮
     lv_obj_set_width(ui_MemoBtn, 70);                                       // 设置宽度
@@ -46,10 +78,13 @@ void flower_home_page_init(lv_obj_t *page)
     lv_obj_set_style_radius(ui_WeatherBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_image_src(ui_WeatherBtn, &ui_img_weather64_png, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(ui_WeatherBtn, weather_btn_click_event_cb, LV_EVENT_CLICKED, "WeatherPage");
+
+    // 获取时间
+    ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
 }
 
 // 首页销毁：空实现（如需释放资源可在此添加）
 void flower_home_page_deinit(lv_obj_t *page) 
 {
-    (void)page;
+    lv_timer_delete(ui_home_timer);
 }
