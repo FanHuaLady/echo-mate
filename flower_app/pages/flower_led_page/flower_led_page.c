@@ -11,7 +11,8 @@ static void btn_back_event_cb(lv_event_t *e)
 }
 
 // LED页面初始化：创建两个按钮
-void flower_led_page_init(lv_obj_t *page) {
+void flower_led_page_init(lv_obj_t *page) 
+{
     printf("=== LED Page Init Start ===\n");
     printf("Page pointer: %p\n", page);
     
@@ -57,6 +58,7 @@ void flower_led_page_init(lv_obj_t *page) {
 }
 
 // LED页面销毁：空实现（如需释放资源可在此添加）
-void flower_led_page_deinit(lv_obj_t *page) {
+void flower_led_page_deinit(lv_obj_t *page) 
+{
     (void)page;
 }

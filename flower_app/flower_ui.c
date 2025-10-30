@@ -1,10 +1,12 @@
 #include "flower_ui.h"
 #include "../../common/gpio_manager/gpio_manager.h"
 #include "common/flower_page_manager/flower_page_manager.h"
+
 #include "pages/flower_home_page/flower_home_page.h"
 #include "pages/flower_led_page/flower_led_page.h"
+#include "pages/flower_weather_page/flower_weather_page.h"
 
-flower_lib_pm_page_t g_home_page[2] = 
+flower_lib_pm_page_t g_home_page[3] = 
 {
     {
         .name = "HomePage",
@@ -16,6 +18,12 @@ flower_lib_pm_page_t g_home_page[2] =
         .name = "LEDPage",
         .init = flower_led_page_init,
         .deinit = flower_led_page_deinit,
+        .page_obj = NULL
+    },
+    {
+        .name = "WeatherPage",
+        .init = flower_weather_page_init,
+        .deinit = flower_weather_page_deinit,
         .page_obj = NULL
     }
 };
@@ -47,6 +55,7 @@ void flower_ui_init(void)
 
     flower_pm_register_page(&g_home_page[0]);                              // 注册首页
     flower_pm_register_page(&g_home_page[1]);                              // 注册LED页面
+    flower_pm_register_page(&g_home_page[2]);                              // 注册
 
     lv_timer_create(LED_Loop, 1000, NULL);
     
