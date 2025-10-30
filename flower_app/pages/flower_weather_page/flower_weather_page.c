@@ -1,6 +1,7 @@
 #include "../../common/flower_page_manager/flower_page_manager.h"
 #include "flower_weather_app.h"
 #include "flower_weather_page.h"
+#include <time.h>
 #include <stdio.h>
 
 static char * day[] = { "Sun.", "Mon.", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat." };
@@ -14,16 +15,79 @@ lv_obj_t * ui_LabelWind;
 lv_obj_t * ui_LabelHumi;
 lv_timer_t * ui_weather_timer;
 
-// 按钮1回调：返回主界面
+static void weather_timer_cb(lv_timer_t *timer)
+{
+    if(timer == NULL) return;
+
+    // 获取最新天气数据
+    FlowerWeather *weather = flower_weather_get_info();
+    if (weather == NULL) 
+    {
+        printf("Failed to get weather info (timer update)\n");
+        return;
+    }
+
+    // 更新日期
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    char str[36];
+    sprintf(str, "%02d.%02d %s", t->tm_mon + 1, t->tm_mday, day[t->tm_wday]);
+    lv_label_set_text(ui_LabelDate, str);
+
+    // 更新核心天气数据
+//    lv_label_set_text(ui_LabelCity, weather->city ? weather->city : "Shijiazhuang");
+    sprintf(str, "%s°", weather->temperature ? weather->temperature : "25");
+    lv_label_set_text(ui_LabelTemp, str);
+    lv_label_set_text(ui_LabelWeather, weather->weather ? weather->weather : "Sunny");
+    lv_label_set_text(ui_LabelWind, weather->windpower ? weather->windpower : "3级");
+    sprintf(str, "%s%%", weather->humidity ? weather->humidity : "50");
+    lv_label_set_text(ui_LabelHumi, str);
+
+    // 根据天气状况切换图片显示
+    /*
+    if(weather->weather && strstr(weather->weather, "Cloud") != NULL)
+    {
+        lv_obj_set_style_opa(ui_ImgCloud, 255, LV_PART_MAIN);
+        lv_obj_set_style_opa(ui_ImgSun, 0, LV_PART_MAIN);
+    }
+    else
+    {
+        lv_obj_set_style_opa(ui_ImgSun, 255, LV_PART_MAIN);
+        lv_obj_set_style_opa(ui_ImgCloud, 0, LV_PART_MAIN);
+    }
+    */
+    
+    printf("Weather info updated via timer.\n");
+
+    // 释放天气数据资源
+    flower_weather_free(weather);
+    lv_refr_now(NULL);  // 强制刷新UI
+}
+
 static void gesture_back_event_cb(lv_event_t *e) 
 {
     lv_event_code_t code = lv_event_get_code(e);
+    /*
     if(code == LV_EVENT_GESTURE)
     {
+        printf("Gesture detected on Weather Page\n");
         if(lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT || lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT)
         {
+            printf("Gesture direction: %d\n", lv_indev_get_gesture_dir(lv_indev_get_act()));
             flower_pm_switch_page("HomePage");
         }
+    }
+    */
+    flower_pm_switch_page("HomePage");
+}
+
+static void exit_btn_event_cb(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    if(code == LV_EVENT_CLICKED)  // 仅响应点击事件
+    {
+        printf("Exit button clicked, return to HomePage\n");
+        flower_pm_switch_page("HomePage");
     }
 }
 
@@ -188,22 +252,43 @@ void flower_weather_page_init(lv_obj_t *page)
 
     flower_weather_free(weather);
 
-    /*
-    lv_obj_t *btn_back = lv_btn_create(page);
-    lv_obj_set_size(btn_back, 60, 40);                                         // 设置按钮大小
-    lv_obj_align(btn_back, LV_ALIGN_BOTTOM_LEFT, 0, 20);
-    lv_obj_set_style_bg_color(btn_back, lv_color_hex(0xFF0000), 0);
-    lv_obj_set_style_bg_opa(btn_back, LV_OPA_COVER, 0);
-    lv_obj_add_event_cb(btn_back, btn_back_event_cb, LV_EVENT_CLICKED, NULL);
-    */
+    ui_weather_timer = lv_timer_create(weather_timer_cb, 5000, NULL);
 
-    lv_obj_add_event_cb(page, gesture_back_event_cb, LV_EVENT_ALL, NULL);
+    // lv_obj_add_event_cb(page, gesture_back_event_cb, LV_EVENT_ALL, NULL);
 
-//  lv_obj_add_event_cb(page, back_event_Gesture, LV_EVENT_ALL, NULL);
+    // 新增：退出按钮（右上角）
+    lv_obj_t *ui_ExitBtn = lv_btn_create(page);
+    lv_obj_set_width(ui_ExitBtn, 60);    // 按钮宽度
+    lv_obj_set_height(ui_ExitBtn, 30);   // 按钮高度
+    lv_obj_set_x(ui_ExitBtn, 130);       // 右偏移（适配320px宽屏幕）
+    lv_obj_set_y(ui_ExitBtn, -100);      // 上偏移
+    lv_obj_set_align(ui_ExitBtn, LV_ALIGN_CENTER);
+    lv_obj_remove_flag(ui_ExitBtn, LV_OBJ_FLAG_SCROLLABLE);
+    // 按钮默认样式（黑色背景+白色边框）
+    lv_obj_set_style_bg_color(ui_ExitBtn, lv_color_hex(0x1A1A1A), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_ExitBtn, 200, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_ExitBtn, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(ui_ExitBtn, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_ExitBtn, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(ui_ExitBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);  // 圆角
+    // 按钮按下样式（灰色背景）
+    lv_obj_set_style_bg_color(ui_ExitBtn, lv_color_hex(0x333333), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_bg_opa(ui_ExitBtn, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+
+    // 退出按钮文字
+    lv_obj_t *ui_ExitBtnLabel = lv_label_create(ui_ExitBtn);
+    lv_label_set_text(ui_ExitBtnLabel, "Exit");
+    lv_obj_set_style_text_color(ui_ExitBtnLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ExitBtnLabel, &ui_font_heiti22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_center(ui_ExitBtnLabel);  // 文字居中
+
+    // 绑定退出按钮回调
+    lv_obj_add_event_cb(ui_ExitBtn, exit_btn_event_cb, LV_EVENT_ALL, NULL);
+
     lv_refr_now(NULL);
 }
 
 void flower_weather_page_deinit(lv_obj_t *page) 
 {
-    
+    lv_timer_delete(ui_weather_timer);
 }
