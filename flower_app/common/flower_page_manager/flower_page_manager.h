@@ -6,8 +6,8 @@
 // 定义页面结构体
 typedef struct {
     char *name;                                     // 页面名称
-    void (*init)(lv_obj_t *page);                   // 页面初始化函数
-    void (*deinit)(lv_obj_t *page);                 // 页面销毁函数
+    void (*init)(void);                             // 页面初始化函数
+    void (*deinit)(void);                           // 页面销毁函数
     lv_obj_t *page_obj;                             // 页面上的主要 LVGL 对象
 } flower_lib_pm_page_t;
 
@@ -38,6 +38,7 @@ LV_FONT_DECLARE(ui_font_shuhei22);
 LV_FONT_DECLARE(ui_font_NuberBig90);
 
 void flower_pm_register_page(flower_lib_pm_page_t *page);
+flower_lib_pm_page_t* find_page(const char *name);
 void flower_pm_switch_page(const char *page_name);
 
 #endif

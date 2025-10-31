@@ -60,6 +60,7 @@ int flower_time_init(void)
     return -1;
 }
 
+// 
 int flower_time_sync_from_ntp(void) 
 {
     int sockfd;
@@ -151,11 +152,14 @@ int flower_time_set_system_time(time_t new_time)
     }
 }
 
-struct tm *flower_time_get_local_time(void) {
+// 获取本地时间
+struct tm *flower_time_get_local_time(void) 
+{
     static struct tm timeinfo;
     time_t now = time(NULL);
     
-    if (localtime_r(&now, &timeinfo) != NULL) {
+    if (localtime_r(&now, &timeinfo) != NULL) 
+    {
         return &timeinfo;
     }
     
@@ -169,7 +173,6 @@ int flower_time_is_synced(void)
 
 void flower_time_deinit(void) 
 {
-    // 目前没有需要清理的资源
     time_synced = 0;
     printf("Time manager deinitialized\n");
 }

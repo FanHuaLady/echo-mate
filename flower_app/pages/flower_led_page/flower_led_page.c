@@ -11,23 +11,35 @@ static void btn_back_event_cb(lv_event_t *e)
 }
 
 // LED页面初始化：创建两个按钮
-void flower_led_page_init(lv_obj_t *page) 
+void flower_led_page_init(void) 
 {
+    lv_obj_t * led_screen = lv_obj_create(NULL);
+    lv_obj_remove_flag(led_screen, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    /*
+    flower_lib_pm_page_t *self = find_page("LEDPage");
+    if (self != NULL) 
+    {
+        self->page_obj = led_screen;
+        printf("LEDPage page_obj assigned: %p\n", self->page_obj);
+    }
+    */
+   
     printf("=== LED Page Init Start ===\n");
-    printf("Page pointer: %p\n", page);
-    
+    printf("Page pointer: %p\n", led_screen);
+
     // 设置页面背景色以便调试
-    lv_obj_set_style_bg_color(page, lv_color_hex(0x404040), 0);
-    lv_obj_set_style_bg_opa(page, LV_OPA_COVER, 0);
-    
+    lv_obj_set_style_bg_color(led_screen, lv_color_hex(0x404040), 0);
+    lv_obj_set_style_bg_opa(led_screen, LV_OPA_COVER, 0);
+
     // 标题
-    lv_obj_t *title = lv_label_create(page);
+    lv_obj_t *title = lv_label_create(led_screen);
     lv_label_set_text(title, "LED Page - Active");
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
     printf("Title created: %p\n", title);
 
     // 按钮1：返回主界面
-    lv_obj_t *btn_back = lv_btn_create(page);
+    lv_obj_t *btn_back = lv_btn_create(led_screen);
     printf("Button created: %p\n", btn_back);
     
     lv_obj_set_size(btn_back, 150, 50);
@@ -52,13 +64,12 @@ void flower_led_page_init(lv_obj_t *page)
     // btn_back_event_cb(NULL); // 取消注释测试回调函数本身
     
     printf("=== LED Page Init End ===\n");
-    
-    // 强制刷新显示
-    lv_refr_now(NULL);
+
+    lv_scr_load_anim(led_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
 }
 
 // LED页面销毁：空实现（如需释放资源可在此添加）
-void flower_led_page_deinit(lv_obj_t *page) 
+void flower_led_page_deinit(void) 
 {
-    (void)page;
+    
 }

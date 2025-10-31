@@ -16,7 +16,7 @@ void flower_pm_register_page(flower_lib_pm_page_t *page)
 }
 
 // 查找页面（通过名称）
-static flower_lib_pm_page_t* _find_page(const char *name) 
+flower_lib_pm_page_t* find_page(const char *name) 
 {
     for (int i = 0; i < g_page_count; i++)                                  // 遍历已注册页面
     {
@@ -32,46 +32,43 @@ static flower_lib_pm_page_t* _find_page(const char *name)
 // 页面切换：核心逻辑
 void flower_pm_switch_page(const char *page_name) 
 {
-    flower_lib_pm_page_t *target_page = _find_page(page_name);              // 查找目标页面
+    flower_lib_pm_page_t *target_page = find_page(page_name);               // 查找目标页面
     if (target_page == NULL) 
     {
-        printf("Page not found: %s\n", page_name);
+        printf("Page not found: %s\n", page_name);                          // 没有发现目标页面
         return;
     }
 
     if (g_current_page == target_page)                                      // 如果目标页面已经是当前页面，直接返回
     {
-        printf("Page is already active: %s\n", page_name);
+        printf("Page is already active: %s\n", page_name);                  //
         return;
     }
-
+    printf("Switching to page: %s\n", page_name);
+    
     // 销毁当前页面
     if (g_current_page != NULL)                                             // 当前界面存在
     {
+        printf("Deinitializing current page: %s\n", g_current_page->name);
         if (g_current_page->deinit != NULL)                                 // 此界面存在销毁函数
         {
-            g_current_page->deinit(g_current_page->page_obj);               // 调用当前页面的销毁函数
+            printf("Calling deinit for current page: %s\n", g_current_page->name);
+            g_current_page->deinit();                                       // 调用当前页面的销毁函数
         }
         if (g_current_page->page_obj != NULL)                               // 当前页面对象存在
         {
+            printf("Deleting current page object\n");
             lv_obj_del(g_current_page->page_obj);                           // 删除当前页面对象
             g_current_page->page_obj = NULL;
         }
     }
-
-    // 创建并初始化新页面
-    lv_obj_t *parent = lv_scr_act();
-    lv_obj_t *new_page = lv_obj_create(parent);
-    lv_obj_set_size(new_page, lv_obj_get_width(parent), lv_obj_get_height(parent));
-    lv_obj_clear_flag(new_page, LV_OBJ_FLAG_SCROLLABLE);
-//    lv_obj_set_style_bg_color(new_page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-//    lv_obj_set_style_bg_opa(new_page, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_pos(new_page, 0, 0);
     
-    target_page->page_obj = new_page;                                       // 设置新页面对象
+    printf("Initializing target page: %s\n", target_page->name);
+    // 初始化新页面
     if (target_page->init != NULL) 
     {
-        target_page->init(new_page);                                        // 调用新页面的初始化函数    
+        printf("Calling init for target page: %s\n", target_page->name);
+        target_page->init();                                                // 调用新页面的初始化函数    
     }
 
     g_current_page = target_page;

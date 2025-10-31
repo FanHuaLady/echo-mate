@@ -3,7 +3,7 @@
 
 #include "../../lvgl/lvgl.h"
 
-void flower_home_page_init(lv_obj_t *page);
-void flower_home_page_deinit(lv_obj_t *page);
+void flower_home_page_init(void);
+void flower_home_page_deinit(void);
 
 #endif

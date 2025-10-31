@@ -63,23 +63,6 @@ static void weather_timer_cb(lv_timer_t *timer)
     lv_refr_now(NULL);
 }
 
-static void gesture_back_event_cb(lv_event_t *e) 
-{
-    lv_event_code_t code = lv_event_get_code(e);
-    /*
-    if(code == LV_EVENT_GESTURE)
-    {
-        printf("Gesture detected on Weather Page\n");
-        if(lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT || lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT)
-        {
-            printf("Gesture direction: %d\n", lv_indev_get_gesture_dir(lv_indev_get_act()));
-            flower_pm_switch_page("HomePage");
-        }
-    }
-    */
-    flower_pm_switch_page("HomePage");
-}
-
 static void exit_btn_event_cb(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -90,19 +73,32 @@ static void exit_btn_event_cb(lv_event_t *e)
     }
 }
 
-void flower_weather_page_init(lv_obj_t *page) 
+void flower_weather_page_init(void) 
 {
+    lv_obj_t * weather_screen = lv_obj_create(NULL);
+    lv_obj_remove_flag(weather_screen, LV_OBJ_FLAG_SCROLLABLE);
+
+    /*
+    flower_lib_pm_page_t *self = find_page("WeatherPage");
+    if (self != NULL) 
+    {
+        self->page_obj = weather_screen;
+        printf("WeatherPage page_obj assigned: %p\n", self->page_obj);
+
+    }
+    */
+
     FlowerWeather *weather = flower_weather_get_info();
     if (weather == NULL) 
     {
         printf("Failed to get weather info\n");
     }
 
-    lv_obj_set_style_bg_color(page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(page, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(weather_screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(weather_screen, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // 太阳图片
-    lv_obj_t * ui_ImgSun = lv_image_create(page);
+    lv_obj_t * ui_ImgSun = lv_image_create(weather_screen);
     lv_image_set_src(ui_ImgSun, &ui_img_sun_png);
     lv_obj_set_width(ui_ImgSun, LV_SIZE_CONTENT);
     lv_obj_set_height(ui_ImgSun, LV_SIZE_CONTENT);
@@ -114,7 +110,7 @@ void flower_weather_page_init(lv_obj_t *page)
     lv_image_set_scale(ui_ImgSun, 208);
 
     // 云朵图片
-    ui_ImgCloud = lv_image_create(page);
+    ui_ImgCloud = lv_image_create(weather_screen);
     lv_image_set_src(ui_ImgCloud, &ui_img_clouds_png);
     lv_obj_set_width(ui_ImgCloud, LV_SIZE_CONTENT);
     lv_obj_set_height(ui_ImgCloud, LV_SIZE_CONTENT);
@@ -126,7 +122,7 @@ void flower_weather_page_init(lv_obj_t *page)
     lv_image_set_scale(ui_ImgCloud, 206);
 
     // 信息面板
-    lv_obj_t * ui_LabelsPanel = lv_obj_create(page);
+    lv_obj_t * ui_LabelsPanel = lv_obj_create(weather_screen);
     lv_obj_set_width(ui_LabelsPanel, 200);
     lv_obj_set_height(ui_LabelsPanel, 240);
     lv_obj_set_x(ui_LabelsPanel, -50);
@@ -188,7 +184,7 @@ void flower_weather_page_init(lv_obj_t *page)
     lv_obj_set_style_text_font(ui_LabelWeather, &ui_font_heiti22, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // 底部信息面板
-    lv_obj_t * ui_BtmLabelsPanel = lv_obj_create(page);
+    lv_obj_t * ui_BtmLabelsPanel = lv_obj_create(weather_screen);
     lv_obj_set_width(ui_BtmLabelsPanel, 320);
     lv_obj_set_height(ui_BtmLabelsPanel, 50);
     lv_obj_set_x(ui_BtmLabelsPanel, 0);
@@ -256,7 +252,7 @@ void flower_weather_page_init(lv_obj_t *page)
     // lv_obj_add_event_cb(page, gesture_back_event_cb, LV_EVENT_ALL, NULL);
 
     // 新增：退出按钮（右上角）
-    lv_obj_t *ui_ExitBtn = lv_btn_create(page);
+    lv_obj_t *ui_ExitBtn = lv_btn_create(weather_screen);
     lv_obj_set_width(ui_ExitBtn, 60);    // 按钮宽度
     lv_obj_set_height(ui_ExitBtn, 30);   // 按钮高度
     lv_obj_set_x(ui_ExitBtn, 130);       // 右偏移（适配320px宽屏幕）
@@ -284,10 +280,10 @@ void flower_weather_page_init(lv_obj_t *page)
     // 绑定退出按钮回调
     lv_obj_add_event_cb(ui_ExitBtn, exit_btn_event_cb, LV_EVENT_ALL, NULL);
 
-    lv_refr_now(NULL);
+    lv_scr_load_anim(weather_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
 }
 
-void flower_weather_page_deinit(lv_obj_t *page) 
+void flower_weather_page_deinit(void) 
 {
     // lv_timer_delete(ui_weather_timer);
 }

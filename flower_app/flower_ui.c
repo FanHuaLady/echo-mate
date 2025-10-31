@@ -53,6 +53,18 @@ void flower_ui_init(void)
 {
     LED_Init();
 
+    /*
+    int init_result = flower_time_init();
+    if (init_result == 0) 
+    {
+        printf("初始化成功，时间已通过NTP同步\n");
+    } 
+    else 
+    {
+        printf("初始化完成，但NTP同步失败，将使用系统当前时间\n");
+    }
+    */
+
     flower_pm_register_page(&g_home_page[0]);                              // 注册首页
     flower_pm_register_page(&g_home_page[1]);                              // 注册LED页面
     flower_pm_register_page(&g_home_page[2]);                              // 注册

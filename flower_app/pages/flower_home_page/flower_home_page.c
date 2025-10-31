@@ -26,7 +26,7 @@ static void weather_btn_click_event_cb(lv_event_t *e)
 // 时间
 static void ui_home_timer_cb(lv_event_t *e)
 {
-    struct tm *t = flower_time_get_local_time();
+    struct tm *t = flower_time_get_local_time();                                // 获取本地时间
     if(t != NULL)
     {
         char time_str[6];
@@ -36,10 +36,26 @@ static void ui_home_timer_cb(lv_event_t *e)
 }
 
 // 首页初始化
-void flower_home_page_init(lv_obj_t *page) 
+void flower_home_page_init(void) 
 {
+
+    printf("初始化首页页面\n");
+
+    lv_obj_t * home_screen = lv_obj_create(NULL);
+    lv_obj_remove_flag(home_screen, LV_OBJ_FLAG_SCROLLABLE);
+
+    /*
+    flower_lib_pm_page_t *self = find_page("HomePage");
+    if (self != NULL) 
+    {
+        self->page_obj = home_screen;
+        printf("HomePage page_obj assigned: %p\n", self->page_obj);
+    }
+    */
+        
+
     // 时间标签
-    timelabel = lv_label_create(page);
+    timelabel = lv_label_create(home_screen);
     lv_obj_set_width(timelabel, LV_SIZE_CONTENT);
     lv_obj_set_height(timelabel, LV_SIZE_CONTENT);
     lv_obj_set_x(timelabel, 0);
@@ -52,7 +68,7 @@ void flower_home_page_init(lv_obj_t *page)
     lv_label_set_text(timelabel, time_str);
 
     // 关于LED应用图标
-    lv_obj_t *ui_MemoBtn = lv_button_create(page);                          // 创建按钮
+    lv_obj_t *ui_MemoBtn = lv_button_create(home_screen);                   // 创建按钮
     lv_obj_set_width(ui_MemoBtn, 70);                                       // 设置宽度
     lv_obj_set_height(ui_MemoBtn, 70);                                      // 设置高度
     lv_obj_set_x(ui_MemoBtn, 15);
@@ -67,7 +83,7 @@ void flower_home_page_init(lv_obj_t *page)
     lv_obj_add_event_cb(ui_MemoBtn, led_btn_click_event_cb, LV_EVENT_CLICKED, "LEDPage");
 
     // 关于天气应用图标
-    lv_obj_t * ui_WeatherBtn = lv_button_create(page);
+    lv_obj_t * ui_WeatherBtn = lv_button_create(home_screen);
     lv_obj_set_width(ui_WeatherBtn, 70);
     lv_obj_set_height(ui_WeatherBtn, 70);
     lv_obj_set_x(ui_WeatherBtn, 110);
@@ -80,11 +96,12 @@ void flower_home_page_init(lv_obj_t *page)
     lv_obj_add_event_cb(ui_WeatherBtn, weather_btn_click_event_cb, LV_EVENT_CLICKED, "WeatherPage");
 
     // 获取时间
-    ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
+    // ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
+
+    lv_scr_load_anim(home_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
 }
 
-// 首页销毁：空实现（如需释放资源可在此添加）
-void flower_home_page_deinit(lv_obj_t *page) 
+void flower_home_page_deinit(void) 
 {
-    lv_timer_delete(ui_home_timer);
+    // lv_timer_delete(ui_home_timer);
 }
