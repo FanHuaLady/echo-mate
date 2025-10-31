@@ -31,7 +31,6 @@ static void weather_timer_cb(lv_timer_t *timer)
     char str[36];
 
     // 更新日期
-    /*
     struct tm *t = flower_time_get_local_time();
     if (t != NULL) 
     {
@@ -48,7 +47,7 @@ static void weather_timer_cb(lv_timer_t *timer)
     {
         printf("Failed to get local time\n");
     }
-    */
+    
 
     // 更新核心天气数据
     lv_label_set_text(ui_LabelCity,"石家庄");
@@ -143,7 +142,17 @@ void flower_weather_page_init(void)
     lv_obj_set_x(ui_LabelDate, -10);
     lv_obj_set_y(ui_LabelDate, 30);
     lv_obj_set_align(ui_LabelDate, LV_ALIGN_TOP_MID);
-    sprintf(str, "%02d.%02d %s", 10,30, day[3]);
+
+    struct tm *t_init = flower_time_get_local_time();
+    if (t_init != NULL)
+    {
+        sprintf(str, "%02d.%02d %s", t_init->tm_mon + 1, t_init->tm_mday, day[t_init->tm_wday]);
+    }
+    else
+    {
+        sprintf(str, "00.00 %s", day[0]);  // 时间获取失败时的默认值
+        printf("Failed to get local time on weather page init\n");
+    }
     lv_label_set_text(ui_LabelDate, str);
     lv_obj_set_style_text_color(ui_LabelDate, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelDate, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -237,9 +246,7 @@ void flower_weather_page_init(void)
 
     flower_weather_free(weather);
 
-    // ui_weather_timer = lv_timer_create(weather_timer_cb, 5000, NULL);
-
-    // lv_obj_add_event_cb(page, gesture_back_event_cb, LV_EVENT_ALL, NULL);
+    ui_weather_timer = lv_timer_create(weather_timer_cb, 5000, NULL);
 
     // 新增：退出按钮（右上角）
     lv_obj_t *ui_ExitBtn = lv_btn_create(weather_screen);
@@ -275,5 +282,5 @@ void flower_weather_page_init(void)
 
 void flower_weather_page_deinit(void) 
 {
-    // lv_timer_delete(ui_weather_timer);
+    lv_timer_delete(ui_weather_timer);
 }
