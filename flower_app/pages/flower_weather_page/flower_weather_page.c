@@ -78,16 +78,6 @@ void flower_weather_page_init(void)
     lv_obj_t * weather_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(weather_screen, LV_OBJ_FLAG_SCROLLABLE);
 
-    /*
-    flower_lib_pm_page_t *self = find_page("WeatherPage");
-    if (self != NULL) 
-    {
-        self->page_obj = weather_screen;
-        printf("WeatherPage page_obj assigned: %p\n", self->page_obj);
-
-    }
-    */
-
     FlowerWeather *weather = flower_weather_get_info();
     if (weather == NULL) 
     {

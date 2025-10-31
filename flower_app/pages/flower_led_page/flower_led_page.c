@@ -15,15 +15,6 @@ void flower_led_page_init(void)
 {
     lv_obj_t * led_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(led_screen, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-    /*
-    flower_lib_pm_page_t *self = find_page("LEDPage");
-    if (self != NULL) 
-    {
-        self->page_obj = led_screen;
-        printf("LEDPage page_obj assigned: %p\n", self->page_obj);
-    }
-    */
    
     printf("=== LED Page Init Start ===\n");
     printf("Page pointer: %p\n", led_screen);

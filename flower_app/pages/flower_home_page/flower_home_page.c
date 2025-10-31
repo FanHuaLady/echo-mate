@@ -43,17 +43,7 @@ void flower_home_page_init(void)
 
     lv_obj_t * home_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(home_screen, LV_OBJ_FLAG_SCROLLABLE);
-
-    /*
-    flower_lib_pm_page_t *self = find_page("HomePage");
-    if (self != NULL) 
-    {
-        self->page_obj = home_screen;
-        printf("HomePage page_obj assigned: %p\n", self->page_obj);
-    }
-    */
         
-
     // 时间标签
     timelabel = lv_label_create(home_screen);
     lv_obj_set_width(timelabel, LV_SIZE_CONTENT);
@@ -63,9 +53,14 @@ void flower_home_page_init(void)
     lv_obj_set_align(timelabel, LV_ALIGN_TOP_MID);
     lv_label_set_text(timelabel, "11:59");
     lv_obj_set_style_text_font(timelabel, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
-    char time_str[6];
-    sprintf(time_str, "%02d:%02d", 6, 30);
-    lv_label_set_text(timelabel, time_str);
+
+    struct tm *t = flower_time_get_local_time();  // 获取实时本地时间
+    if(t != NULL)
+    {
+        char time_str[6];
+        sprintf(time_str, "%02d:%02d", t->tm_hour, t->tm_min);  // 使用当前小时和分钟
+        lv_label_set_text(timelabel, time_str);
+    }
 
     // 关于LED应用图标
     lv_obj_t *ui_MemoBtn = lv_button_create(home_screen);                   // 创建按钮
@@ -96,12 +91,12 @@ void flower_home_page_init(void)
     lv_obj_add_event_cb(ui_WeatherBtn, weather_btn_click_event_cb, LV_EVENT_CLICKED, "WeatherPage");
 
     // 获取时间
-    // ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
+    ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
 
     lv_scr_load_anim(home_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
 }
 
 void flower_home_page_deinit(void) 
 {
-    // lv_timer_delete(ui_home_timer);
+    lv_timer_delete(ui_home_timer);
 }
