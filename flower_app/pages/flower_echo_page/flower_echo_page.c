@@ -1,24 +1,26 @@
 #include "../../common/flower_page_manager/flower_page_manager.h"
 #include "flower_echo_page.h"
 #include <stdio.h>
-#include <stdlib.h>  // 添加这个头文件用于 rand()
+#include <stdlib.h>
 
-lv_obj_t * ui_EyesPanel;                                                // 眼睛面板
-lv_obj_t * ui_EyesVerMovePanel;                                         // 眼睛垂直移动面板
-lv_obj_t * ui_QuestionImg;                                              // 问题图像
-lv_obj_t * ui_thinkImg;                                                 // 思考图像
-lv_obj_t * ui_HandImg;                                                  // 手部图像
-lv_obj_t * ui_EyeRight;                                                 // 右眼
-lv_obj_t * ui_EyeLeft;                                                  // 左眼
-lv_obj_t * ui_MouthPanel;                                               // 嘴部面板
-lv_obj_t * ui_Mouth;                                                    // 嘴部
-lv_obj_t * ui_LabelInfo;                                                // 信息标签
+lv_obj_t * ui_EyesPanel;
+lv_obj_t * ui_EyesVerMovePanel;
+lv_obj_t * ui_QuestionImg;
+lv_obj_t * ui_thinkImg;
+lv_obj_t * ui_HandImg;
+lv_obj_t * ui_EyeRight;
+lv_obj_t * ui_EyeLeft;
+lv_obj_t * ui_MouthPanel;
+lv_obj_t * ui_Mouth;
+lv_obj_t * ui_LabelInfo;
 
 // 眨眼动画相关变量
-static lv_anim_t blink_anim;
 static bool is_animating = false;
+static lv_timer_t *blink_timer = NULL;
+static lv_anim_t blink_anim_left;  // 为左右眼分别创建动画变量
+static lv_anim_t blink_anim_right;
 
-// 前向声明函数（解决顺序问题）
+// 前向声明函数
 static void blink_timer_cb(lv_timer_t * timer);
 static void start_blink_animation(void);
 
@@ -35,42 +37,28 @@ static void blink_timer_cb(lv_timer_t * timer)
     if (!is_animating) {
         start_blink_animation();
     }
-    lv_timer_del(timer);
-    
-    // 随机安排下一次眨眼 (2-5秒)
-    uint32_t next_blink = 2000 + (rand() % 3000);
-    lv_timer_t * new_timer = lv_timer_create(blink_timer_cb, next_blink, NULL);
-    lv_timer_set_repeat_count(new_timer, 1);
-}
-
-// 眨眼动画准备函数
-static void blink_anim_ready_cb(lv_anim_t * anim)
-{
-    is_animating = false;
-    // 动画结束后重新安排下一次眨眼
-    lv_timer_t * timer = lv_timer_create(blink_timer_cb, 3000, NULL); // 3秒后再次眨眼
-    lv_timer_set_repeat_count(timer, 1);
+    // 定时器会自动被删除，因为设置了重复次数为1
 }
 
 // 开始眨眼动画
 static void start_blink_animation(void)
 {
+    if (is_animating) return;  // 防止重复启动
+    
     is_animating = true;
     
     // 为左眼创建动画
-    lv_anim_init(&blink_anim);
-    lv_anim_set_var(&blink_anim, ui_EyeLeft);
-    lv_anim_set_exec_cb(&blink_anim, (lv_anim_exec_xcb_t)blink_anim_exec_cb);
-    lv_anim_set_values(&blink_anim, 80, 5);  // 从80px高度眨眼到5px
-    lv_anim_set_time(&blink_anim, 150);      // 眨眼持续时间150ms
-    lv_anim_set_playback_time(&blink_anim, 150); // 恢复时间150ms
-    lv_anim_set_playback_delay(&blink_anim, 50); // 闭合后保持50ms
-    lv_anim_set_repeat_count(&blink_anim, 1);
-    lv_anim_set_ready_cb(&blink_anim, blink_anim_ready_cb);
-    lv_anim_start(&blink_anim);
+    lv_anim_init(&blink_anim_left);
+    lv_anim_set_var(&blink_anim_left, ui_EyeLeft);
+    lv_anim_set_exec_cb(&blink_anim_left, (lv_anim_exec_xcb_t)blink_anim_exec_cb);
+    lv_anim_set_values(&blink_anim_left, 80, 5);
+    lv_anim_set_time(&blink_anim_left, 150);
+    lv_anim_set_playback_time(&blink_anim_left, 150);
+    lv_anim_set_playback_delay(&blink_anim_left, 50);
+    lv_anim_set_repeat_count(&blink_anim_left, 1);
+    lv_anim_start(&blink_anim_left);
     
-    // 为右眼创建相同的动画（同步眨眼）
-    lv_anim_t blink_anim_right;
+    // 为右眼创建相同的动画
     lv_anim_init(&blink_anim_right);
     lv_anim_set_var(&blink_anim_right, ui_EyeRight);
     lv_anim_set_exec_cb(&blink_anim_right, (lv_anim_exec_xcb_t)blink_anim_exec_cb);
@@ -80,6 +68,12 @@ static void start_blink_animation(void)
     lv_anim_set_playback_delay(&blink_anim_right, 50);
     lv_anim_set_repeat_count(&blink_anim_right, 1);
     lv_anim_start(&blink_anim_right);
+    
+    // 安排下一次眨眼（使用定时器而不是动画完成回调）
+    uint32_t next_blink = 2000 + (rand() % 3000);
+    blink_timer = lv_timer_create(blink_timer_cb, next_blink, NULL);
+    lv_timer_set_repeat_count(blink_timer, 1);
+    is_animating = false;  // 动画开始后就标记为非动画状态，因为LVGL会处理动画执行
 }
 
 static void exit_btn_event_cb(lv_event_t *e)
@@ -88,6 +82,13 @@ static void exit_btn_event_cb(lv_event_t *e)
     if(code == LV_EVENT_CLICKED)
     {
         printf("Exit button clicked, return to HomePage\n");
+        
+        // 退出时清理定时器
+        if (blink_timer) {
+            lv_timer_del(blink_timer);
+            blink_timer = NULL;
+        }
+        
         flower_pm_switch_page("HomePage");
     }
 }
@@ -100,7 +101,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_bg_color(echo_screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(echo_screen, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_EyesPanel = lv_obj_create(echo_screen);                          // 创建眼睛面板
+    ui_EyesPanel = lv_obj_create(echo_screen);
     lv_obj_set_width(ui_EyesPanel, 210);
     lv_obj_set_height(ui_EyesPanel, 80);
     lv_obj_set_x(ui_EyesPanel, 0);
@@ -112,7 +113,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_border_color(ui_EyesPanel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_EyesPanel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_EyesVerMovePanel = lv_obj_create(ui_EyesPanel);                  // 创建眼睛垂直移动面板
+    ui_EyesVerMovePanel = lv_obj_create(ui_EyesPanel);
     lv_obj_set_width(ui_EyesVerMovePanel, 210);
     lv_obj_set_height(ui_EyesVerMovePanel, 80);
     lv_obj_set_align(ui_EyesVerMovePanel, LV_ALIGN_CENTER);
@@ -122,7 +123,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_border_color(ui_EyesVerMovePanel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_EyesVerMovePanel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_EyeRight = lv_button_create(ui_EyesVerMovePanel);                // 创建右眼
+    ui_EyeRight = lv_button_create(ui_EyesVerMovePanel);
     lv_obj_set_width(ui_EyeRight, 80);
     lv_obj_set_height(ui_EyeRight, 80);
     lv_obj_set_x(ui_EyeRight, 60);
@@ -134,7 +135,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_bg_color(ui_EyeRight, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_EyeRight, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_EyeLeft = lv_button_create(ui_EyesVerMovePanel);                 // 创建左眼
+    ui_EyeLeft = lv_button_create(ui_EyesVerMovePanel);
     lv_obj_set_width(ui_EyeLeft, 80);
     lv_obj_set_height(ui_EyeLeft, 80);
     lv_obj_set_x(ui_EyeLeft, -60);
@@ -146,7 +147,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_bg_color(ui_EyeLeft, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_EyeLeft, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_MouthPanel = lv_obj_create(echo_screen);                         // 创建嘴部面板
+    ui_MouthPanel = lv_obj_create(echo_screen);
     lv_obj_set_width(ui_MouthPanel, 80);
     lv_obj_set_height(ui_MouthPanel, 80);
     lv_obj_set_x(ui_MouthPanel, 0);
@@ -158,7 +159,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_border_color(ui_MouthPanel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_MouthPanel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_Mouth = lv_button_create(ui_MouthPanel);                         // 创建嘴部
+    ui_Mouth = lv_button_create(ui_MouthPanel);
     lv_obj_set_width(ui_Mouth, 60);                                     
     lv_obj_set_height(ui_Mouth, 60);
     lv_obj_set_x(ui_Mouth, 0);
@@ -170,7 +171,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_bg_color(ui_Mouth, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Mouth, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_QuestionImg = lv_image_create(echo_screen);                      // 创建问题图像
+    ui_QuestionImg = lv_image_create(echo_screen);
     lv_image_set_src(ui_QuestionImg, &ui_img_question60_png);
     lv_obj_set_width(ui_QuestionImg, LV_SIZE_CONTENT);
     lv_obj_set_height(ui_QuestionImg, LV_SIZE_CONTENT);
@@ -226,7 +227,7 @@ void flower_echo_page_init(void)
     lv_obj_set_style_border_color(ui_ExitBtn, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(ui_ExitBtn, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_ExitBtn, 128, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_radius(ui_ExitBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);  // 圆角
+    lv_obj_set_style_radius(ui_ExitBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_ExitBtn, lv_color_hex(0x333333), LV_PART_MAIN | LV_STATE_PRESSED);
     lv_obj_set_style_bg_opa(ui_ExitBtn, 255, LV_PART_MAIN | LV_STATE_PRESSED);
     lv_obj_t *ui_ExitBtnLabel = lv_label_create(ui_ExitBtn);
@@ -239,11 +240,16 @@ void flower_echo_page_init(void)
     lv_scr_load_anim(echo_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
 
     // 启动第一次眨眼（2秒后）
-    lv_timer_t * timer = lv_timer_create(blink_timer_cb, 2000, NULL);
-    lv_timer_set_repeat_count(timer, 1);
+    blink_timer = lv_timer_create(blink_timer_cb, 2000, NULL);
+    lv_timer_set_repeat_count(blink_timer, 1);
 }
 
 void flower_echo_page_deinit(void) 
 {
-    
+    // 页面退出时清理定时器
+    if (blink_timer) {
+        lv_timer_del(blink_timer);
+        blink_timer = NULL;
+    }
+    is_animating = false;
 }
