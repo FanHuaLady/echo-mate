@@ -109,10 +109,18 @@ void flower_home_page_init(void)
     lv_obj_add_flag(ui_EchoBtn, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
     lv_obj_remove_flag(ui_EchoBtn, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_radius(ui_EchoBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_EchoBtn, &ui_font_iconfont48, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_EchoBtn, lv_color_hex(0xA56CC1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_EchoBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_t * ui_EchoIcon = lv_label_create(ui_EchoBtn);
+    lv_obj_set_width(ui_EchoIcon, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_EchoIcon, LV_SIZE_CONTENT);
+    lv_obj_set_align(ui_EchoIcon, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_EchoIcon, "");
+    lv_obj_set_style_text_color(ui_EchoIcon, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_EchoIcon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_EchoIcon, &ui_font_iconfont48, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(ui_EchoBtn, echo_btn_click_event_cb, LV_EVENT_CLICKED, "EchoPage");
 
-    // 获取时间
     ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
 
     lv_scr_load_anim(home_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
