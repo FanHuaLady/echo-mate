@@ -1,6 +1,7 @@
 #include "../../common/flower_page_manager/flower_page_manager.h"
 #include "flower_echo_page.h"
 #include <stdio.h>
+#include <stdlib.h>  // 添加这个头文件用于 rand()
 
 lv_obj_t * ui_EyesPanel;                                                // 眼睛面板
 lv_obj_t * ui_EyesVerMovePanel;                                         // 眼睛垂直移动面板
@@ -12,8 +13,74 @@ lv_obj_t * ui_EyeLeft;                                                  // 左�
 lv_obj_t * ui_MouthPanel;                                               // 嘴部面板
 lv_obj_t * ui_Mouth;                                                    // 嘴部
 lv_obj_t * ui_LabelInfo;                                                // 信息标签
-// lv_timer_t * ui_ChatBot_timer;                                          // 聊天机器人定时器
-// lv_timer_t * ui_ChatBot_move_timer;                                     // 聊天机器人移动定时器
+
+// 眨眼动画相关变量
+static lv_anim_t blink_anim;
+static bool is_animating = false;
+
+// 前向声明函数（解决顺序问题）
+static void blink_timer_cb(lv_timer_t * timer);
+static void start_blink_animation(void);
+
+// 眨眼动画执行函数
+static void blink_anim_exec_cb(void * obj, int32_t value)
+{
+    lv_obj_set_height(obj, value);
+    lv_obj_set_style_radius(obj, value/2, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+// 定时器回调，触发眨眼
+static void blink_timer_cb(lv_timer_t * timer)
+{
+    if (!is_animating) {
+        start_blink_animation();
+    }
+    lv_timer_del(timer);
+    
+    // 随机安排下一次眨眼 (2-5秒)
+    uint32_t next_blink = 2000 + (rand() % 3000);
+    lv_timer_t * new_timer = lv_timer_create(blink_timer_cb, next_blink, NULL);
+    lv_timer_set_repeat_count(new_timer, 1);
+}
+
+// 眨眼动画准备函数
+static void blink_anim_ready_cb(lv_anim_t * anim)
+{
+    is_animating = false;
+    // 动画结束后重新安排下一次眨眼
+    lv_timer_t * timer = lv_timer_create(blink_timer_cb, 3000, NULL); // 3秒后再次眨眼
+    lv_timer_set_repeat_count(timer, 1);
+}
+
+// 开始眨眼动画
+static void start_blink_animation(void)
+{
+    is_animating = true;
+    
+    // 为左眼创建动画
+    lv_anim_init(&blink_anim);
+    lv_anim_set_var(&blink_anim, ui_EyeLeft);
+    lv_anim_set_exec_cb(&blink_anim, (lv_anim_exec_xcb_t)blink_anim_exec_cb);
+    lv_anim_set_values(&blink_anim, 80, 5);  // 从80px高度眨眼到5px
+    lv_anim_set_time(&blink_anim, 150);      // 眨眼持续时间150ms
+    lv_anim_set_playback_time(&blink_anim, 150); // 恢复时间150ms
+    lv_anim_set_playback_delay(&blink_anim, 50); // 闭合后保持50ms
+    lv_anim_set_repeat_count(&blink_anim, 1);
+    lv_anim_set_ready_cb(&blink_anim, blink_anim_ready_cb);
+    lv_anim_start(&blink_anim);
+    
+    // 为右眼创建相同的动画（同步眨眼）
+    lv_anim_t blink_anim_right;
+    lv_anim_init(&blink_anim_right);
+    lv_anim_set_var(&blink_anim_right, ui_EyeRight);
+    lv_anim_set_exec_cb(&blink_anim_right, (lv_anim_exec_xcb_t)blink_anim_exec_cb);
+    lv_anim_set_values(&blink_anim_right, 80, 5);
+    lv_anim_set_time(&blink_anim_right, 150);
+    lv_anim_set_playback_time(&blink_anim_right, 150);
+    lv_anim_set_playback_delay(&blink_anim_right, 50);
+    lv_anim_set_repeat_count(&blink_anim_right, 1);
+    lv_anim_start(&blink_anim_right);
+}
 
 static void exit_btn_event_cb(lv_event_t *e)
 {
@@ -170,6 +237,10 @@ void flower_echo_page_init(void)
 
     lv_obj_add_event_cb(ui_ExitBtn, exit_btn_event_cb, LV_EVENT_ALL, NULL);
     lv_scr_load_anim(echo_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 100, 0, true);
+
+    // 启动第一次眨眼（2秒后）
+    lv_timer_t * timer = lv_timer_create(blink_timer_cb, 2000, NULL);
+    lv_timer_set_repeat_count(timer, 1);
 }
 
 void flower_echo_page_deinit(void) 
