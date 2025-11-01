@@ -15,6 +15,7 @@
         "lvgl.h": "c",
         "app_weatherpage.h": "c",
         "flower_weather_app.h": "c",
-        "flower_time_manager.h": "c"
+        "flower_time_manager.h": "c",
+        "aichat_c_interface.h": "c"
     }
 }

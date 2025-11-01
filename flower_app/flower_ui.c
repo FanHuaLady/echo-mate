@@ -5,8 +5,9 @@
 #include "pages/flower_home_page/flower_home_page.h"
 #include "pages/flower_led_page/flower_led_page.h"
 #include "pages/flower_weather_page/flower_weather_page.h"
+#include "pages/flower_echo_page/flower_echo_page.h"
 
-flower_lib_pm_page_t g_home_page[3] = 
+flower_lib_pm_page_t g_home_page[4] = 
 {
     {
         .name = "HomePage",
@@ -24,6 +25,12 @@ flower_lib_pm_page_t g_home_page[3] =
         .name = "WeatherPage",
         .init = flower_weather_page_init,
         .deinit = flower_weather_page_deinit,
+        .page_obj = NULL
+    },
+    {
+        .name = "EchoPage",
+        .init = flower_echo_page_init,
+        .deinit = flower_echo_page_deinit,
         .page_obj = NULL
     }
 };
@@ -66,7 +73,8 @@ void flower_ui_init(void)
     flower_pm_register_page(&g_home_page[0]);                              // 注册首页
     flower_pm_register_page(&g_home_page[1]);                              // 注册LED页面
     flower_pm_register_page(&g_home_page[2]);                              // 注册
-
+    flower_pm_register_page(&g_home_page[3]);                              // 注册回声页面
+    
     lv_timer_create(LED_Loop, 1000, NULL);
     
     flower_pm_switch_page("HomePage");                                     // 切换到首页

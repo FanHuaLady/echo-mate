@@ -23,6 +23,12 @@ static void weather_btn_click_event_cb(lv_event_t *e)
     flower_pm_switch_page("WeatherPage");
 }
 
+static void echo_btn_click_event_cb(lv_event_t *e) 
+{
+    lv_event_stop_bubbling(e);
+    flower_pm_switch_page("EchoPage");
+}
+
 // 时间
 static void ui_home_timer_cb(lv_event_t *e)
 {
@@ -43,7 +49,10 @@ void flower_home_page_init(void)
 
     lv_obj_t * home_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(home_screen, LV_OBJ_FLAG_SCROLLABLE);
-        
+    
+    lv_obj_set_style_bg_color(home_screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(home_screen, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     // 时间标签
     timelabel = lv_label_create(home_screen);
     lv_obj_set_width(timelabel, LV_SIZE_CONTENT);
@@ -89,6 +98,19 @@ void flower_home_page_init(void)
     lv_obj_set_style_radius(ui_WeatherBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_image_src(ui_WeatherBtn, &ui_img_weather64_png, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(ui_WeatherBtn, weather_btn_click_event_cb, LV_EVENT_CLICKED, "WeatherPage");
+
+    // 关于回声应用图标
+    lv_obj_t * ui_EchoBtn = lv_button_create(home_screen);
+    lv_obj_set_width(ui_EchoBtn, 70);
+    lv_obj_set_height(ui_EchoBtn, 70);
+    lv_obj_set_x(ui_EchoBtn, 15);
+    lv_obj_set_y(ui_EchoBtn, -45);
+    lv_obj_set_align(ui_EchoBtn, LV_ALIGN_LEFT_MID);
+    lv_obj_add_flag(ui_EchoBtn, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+    lv_obj_remove_flag(ui_EchoBtn, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_radius(ui_EchoBtn, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_EchoBtn, &ui_font_iconfont48, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_event_cb(ui_EchoBtn, echo_btn_click_event_cb, LV_EVENT_CLICKED, "EchoPage");
 
     // 获取时间
     ui_home_timer = lv_timer_create(ui_home_timer_cb, 5000, NULL);
